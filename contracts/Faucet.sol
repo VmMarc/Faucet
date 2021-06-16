@@ -16,7 +16,7 @@ contract Faucet is Ownable {
     constructor(address _Robinet) {
         _Robinet = RobinetToken(robinet);
         _deadLine = 3 days;
-        _supplyInSale = _Robinet.totalSupply();
+        _supplyInStock = _Robinet.balanceOf(owner());
     }
 
     modifier goodTime() {
@@ -25,7 +25,7 @@ contract Faucet is Ownable {
     }
 
     function claim() public goodTime() {
-        require(_supplyInSale != 0, "Faucet: No more Token to claim");
+        require(_supplyInStock != 0, "Faucet: No more Token to claim");
         _claimTokens[msg.sender] = block.timestamp + _deadLine;
         uint256 amountRobinet = 100;
         robinet.transferFrom(owner(), msg.sender, amountRobinet);
@@ -34,9 +34,5 @@ contract Faucet is Ownable {
 
     function timeLeft() public view returns (uint256) {
         return timeLeft = (_claimTokens[msg.sender] - block.timestamp);
-    }
-
-    function tokenLeft() public view returns (uint256) {
-        return _supplyInSale;
     }
 }
