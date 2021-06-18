@@ -16,19 +16,19 @@ async function main() {
   console.log('Deploying contracts with the account:', deployer.address);
 
   // We get the Token contract to deploy
-  const RobineToken = await hre.ethers.getContractFactory('RobineToken');
-  const robineToken = await RobineToken.deploy(ethers.utils.parseEther('1000000'));
+  const RobinetToken = await hre.ethers.getContractFactory('RobinetToken');
+  const robinetToken = await RobinetToken.deploy(ethers.utils.parseEther('1000000'));
 
   // Attendre que le contrat soit réellement déployé, cad que la transaction de déploiement
   // soit incluse dans un bloc
-  await robineToken.deployed();
+  await robinetToken.deployed();
 
   // update deployed.json and print usefull information on the console.
-  await deployed('RobineToken', hre.network.name, robineToken.address);
+  await deployed('RobinetToken', hre.network.name, robinetToken.address);
 
   // We get the Faucet contract to deploy
   const Faucet = await hre.ethers.getContractFactory('Faucet');
-  const faucet = await Faucet.deploy(robineToken.address);
+  const faucet = await Faucet.deploy(robinetToken.address);
 
   // Attendre que le contrat soit réellement déployé, cad que la transaction de déploiement
   // soit incluse dans un bloc
@@ -38,12 +38,11 @@ async function main() {
   await deployed('Faucet', hre.network.name, faucet.address);
 
   if (hre.network.name !== 'mainnet') {
-    await robineToken.approve(`${faucet.address}`, ethers.utils.parseEther('1000000'));
-    console.log((await robineToken.allowance(deployer.address, `${faucet.address}`))
+    await robinetToken.approve(`${faucet.address}`, ethers.utils.parseEther('1000000'));
+    console.log((await robinetToken.allowance(deployer.address, `${faucet.address}`))
       .toString(), `: Allowance to ${faucet.address}`);
   }
 }
-
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 main()
