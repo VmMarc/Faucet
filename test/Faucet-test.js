@@ -28,15 +28,18 @@ describe('Faucet', function () {
     it('should set the token owner address', async function () {
       expect(await faucet.tokenOwner()).to.equal(owner.address);
     });
-  });
 
-  describe('Claim', function () {
     it('should check allowance of faucet', async function () {
       expect(await robinetToken.allowance(owner.address, faucet.address)).to.equal(TOTAL_SUPPLY);
     });
+  });
+
+  describe('Claim', function () {
+    beforeEach(async function () {
+      await faucet.connect(alice).claim();
+    });
 
     it('should revert if faucet time not reached', async function () {
-      await faucet.connect(alice).claim();
       await ethers.provider.send('evm_increaseTime', [TWO_DAYS]);
       await ethers.provider.send('evm_mine');
       await expect(faucet.connect(alice).claim())
@@ -47,11 +50,10 @@ describe('Faucet', function () {
       await ethers.provider.send('evm_increaseTime', [THREE_DAYS]);
       await ethers.provider.send('evm_mine');
       expect(await faucet.connect(alice).claim());
-      expect(await robinetToken.balanceOf(alice.address)).to.equal(TOKEN_AMOUNT);
+      expect(await robinetToken.balanceOf(alice.address)).to.equal(TOKEN_AMOUNT.mul(2));
     });
 
     it('should decrease supply for the faucet', async function () {
-      await faucet.connect(alice).claim();
       expect(await faucet.supplyInStock()).to.equal(TOTAL_SUPPLY.sub(TOKEN_AMOUNT));
     });
   });
