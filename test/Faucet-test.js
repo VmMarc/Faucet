@@ -49,8 +49,8 @@ describe('Faucet', function () {
     it('should get token after 3 days', async function () {
       await ethers.provider.send('evm_increaseTime', [THREE_DAYS]);
       await ethers.provider.send('evm_mine');
-      expect(await faucet.connect(alice).claim());
-      expect(await robinetToken.balanceOf(alice.address)).to.equal(TOKEN_AMOUNT.mul(2));
+      expect(await faucet.connect(alice).claim(), 'Cannot claim Token');
+      expect(await robinetToken.balanceOf(alice.address)).to.equal(TOKEN_AMOUNT.mul(2), 'User balance did not change');
     });
 
     it('should decrease supply for the faucet', async function () {
